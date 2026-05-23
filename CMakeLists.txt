@@ -21,6 +21,8 @@ add_executable(gui
     src/main.cpp
     src/gui/main_window.cpp
     include/main_window.hpp
+    src/hanoi/hanoi_solver.cpp
+    include/hanoi_solver.hpp
 )
 
 target_include_directories(gui PRIVATE include)
