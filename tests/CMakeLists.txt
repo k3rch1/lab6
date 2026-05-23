@@ -7,7 +7,7 @@ enable_testing()
 
 add_executable(
     tests
-    # сюда тестики вписываешь
+    sequence_stack_tests.cpp
 )
 
 target_include_directories(
@@ -18,6 +18,7 @@ target_include_directories(
 target_link_libraries(
     tests
     GTest::gtest_main
+    lab5
 )
 
 include(GoogleTest)
