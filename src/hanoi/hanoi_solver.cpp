@@ -1,7 +1,7 @@
 #include "hanoi_solver.hpp"
 
-hanoi_solver::hanoi_solver(uint disks) {
-    solve(disks, 0, 2, 1);
+hanoi_solver::hanoi_solver(uint disks, hanoi_base base) {
+    solve(disks, base.from, base.to, base.aux);
 }
 
 void hanoi_solver::solve(uint n,uint from, uint to, uint aux) {

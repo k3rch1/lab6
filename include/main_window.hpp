@@ -3,6 +3,9 @@ using uint = unsigned int;
 
 #include <QMainWindow>
 #include <QHBoxLayout>
+#include <QTimer>
+#include <QSlider>
+#include <QPushButton>
 
 #include "array_sequence.hpp"
 #include "sequence_stack.hpp"
@@ -18,10 +21,17 @@ private:
 
     size_t current_move = 0;
 
-    uint disk_count = 5;
+    uint disk_count = 10;
 
     QHBoxLayout* towers_layout;
 
+    hanoi_base towers_ = {0, 2, 1};
+
+    QTimer* timer;
+    QSlider* speed_slider;
+
+    QPushButton* solve_button;
+    QPushButton* stop_button;
 public:
     MainWindow();
 
