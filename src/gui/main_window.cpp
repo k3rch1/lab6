@@ -16,6 +16,14 @@ MainWindow::MainWindow() {
     root_layout->addLayout(towers_layout);
     setCentralWidget(central);
 
+    auto* disks_label = new QPushButton("disks");
+    disks_label->setEnabled(false);
+    buttons_layout->addWidget(disks_label);
+    disks_slider = new QSlider(Qt::Horizontal);
+    disks_slider->setRange(1, 10);
+    disks_slider->setValue(5);
+    buttons_layout->addWidget(disks_slider);
+
     timer = new QTimer(this);
     auto* speed_label = new QPushButton("speed");
     speed_label->setEnabled(false);
@@ -41,6 +49,7 @@ MainWindow::MainWindow() {
     connect(solve_button, &QPushButton::clicked, [this]() {
             solve_button->setEnabled(false);
             stop_button->setEnabled(true);
+            disks_slider->setEnabled(false);
             timer->start(speed_slider->value());
         }
     );
@@ -48,6 +57,7 @@ MainWindow::MainWindow() {
     connect(stop_button, &QPushButton::clicked, [this]() {
             solve_button->setEnabled(true);
             stop_button->setEnabled(false);
+            disks_slider->setEnabled(true);
             timer->stop();
         }
     );
@@ -61,6 +71,7 @@ MainWindow::MainWindow() {
                 current_move = 0;
                 solve_button->setEnabled(true);
                 stop_button->setEnabled(false);
+                disks_slider->setEnabled(true);
                 return;
             }
 
@@ -70,6 +81,12 @@ MainWindow::MainWindow() {
 
     connect(speed_slider, &QSlider::valueChanged, [this](int value) {
             if (timer->isActive()) timer->setInterval(value);
+        }
+    );
+
+    connect(disks_slider, &QSlider::valueChanged, [this](int value) {
+            disk_count = value;
+            reset_game();
         }
     );
 }
@@ -95,7 +112,7 @@ void MainWindow::redraw_towers() {
         "#1982c4",
         "#6a4c93",
         "#f15bb5",
-        "#16502a",
+        "#9b5de5",
         "#0aceb1",
     };
 
@@ -132,6 +149,24 @@ void MainWindow::apply_move(const hanoi_move& mv) {
     auto disk = towers[mv.from]->top();
     towers[mv.from]->pop();
     towers[mv.to]->push(disk);
+
+    redraw_towers();
+}
+
+void MainWindow::reset_game() {
+    timer->stop();
+    current_move = 0;
+
+    for (size_t i = 0; i < 3; ++i) {
+        delete towers[i];
+    }
+    towers.clear();
+
+    for (size_t i = 0; i < 3; ++i) towers.append(new sequence_stack<uint>(new array_sequence<uint>));
+    for (uint i = disk_count; i > 0; --i)  towers[0]->push(i);
+    delete solver;
+    towers_ = {0, 2, 1};
+    solver = new hanoi_solver(disk_count, towers_);
 
     redraw_towers();
 }

@@ -29,6 +29,7 @@ private:
 
     QTimer* timer;
     QSlider* speed_slider;
+    QSlider* disks_slider;
 
     QPushButton* solve_button;
     QPushButton* stop_button;
@@ -40,4 +41,6 @@ public:
     void redraw_towers();
 
     void apply_move(const hanoi_move& mv);
+
+    void reset_game();
 };
