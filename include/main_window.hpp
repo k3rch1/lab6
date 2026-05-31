@@ -8,20 +8,17 @@ using uint = unsigned int;
 #include <QPushButton>
 
 #include "array_sequence.hpp"
-#include "sequence_stack.hpp"
+#include "stack.hpp"
 #include "hanoi_solver.hpp"
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
 
 private:
-    array_sequence<sequence_stack<uint>*> towers;
+    array_sequence<stack<array_sequence, uint>> towers;
 
     hanoi_solver* solver;
-
-    size_t current_move = 0;
-
-    uint disk_count = 10;
+    uint disk_count = 5;
 
     QHBoxLayout* towers_layout;
 
@@ -33,6 +30,11 @@ private:
 
     QPushButton* solve_button;
     QPushButton* stop_button;
+    QPushButton* disks_label;
+    QPushButton* speed_label;
+
+    bool manual_mode = false;
+    int selected_tower = -1;
 public:
     MainWindow();
 
@@ -40,7 +42,7 @@ public:
 
     void redraw_towers();
 
-    void apply_move(const hanoi_move& mv);
-
     void reset_game();
+
+    void manual_move(size_t from, size_t to);
 };

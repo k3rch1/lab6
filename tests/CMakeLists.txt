@@ -7,7 +7,7 @@ enable_testing()
 
 add_executable(
     tests
-    sequence_stack_tests.cpp
+    stack_tests.cpp
     hanoi_solver_tests.cpp
     ../src/hanoi/hanoi_solver.cpp
     ../include/hanoi_solver.hpp

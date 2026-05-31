@@ -2,6 +2,7 @@
 using uint = unsigned int;
 
 #include "array_sequence.hpp"
+#include "stack.hpp"
 
 struct hanoi_base {
     uint from;
@@ -9,19 +10,20 @@ struct hanoi_base {
     uint aux;
 };
 
-struct hanoi_move {
-    uint from;
-    uint to;
-};
-
 class hanoi_solver {
 private:
-    array_sequence<hanoi_move> moves;
+    uint disks;
+    hanoi_base base;
+    array_sequence<stack<array_sequence, uint>>& towers;
 
-    void solve(uint n, uint from, uint to, uint aux);
+    uint current_move = 0;
+
+    void make_step(uint a, uint b);
 
 public:
-    explicit hanoi_solver(uint disks, hanoi_base base);
+    hanoi_solver(uint disks, hanoi_base base, array_sequence<stack<array_sequence, uint>>& towers);
 
-    const array_sequence<hanoi_move>& get_moves() const;
+    bool next_move();
+
+    uint get_current_move() const;
 };
