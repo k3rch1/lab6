@@ -1,6 +1,7 @@
 #include "main_window.hpp"
 #include <QFrame>
 #include <QPushButton>
+#include <QApplication>
 
 MainWindow::MainWindow() {
     auto* central = new QWidget;
@@ -124,12 +125,17 @@ void MainWindow::redraw_towers() {
     };
 
     for (size_t t = 0; t < 3; ++t) {
-        auto* tower_widget = new QWidget;
-        tower_widget->setMinimumHeight(600);
-        tower_widget->setMinimumWidth(250);
+        auto* tower_widget = new QPushButton;
+        tower_widget->setMinimumWidth(200);
+        tower_widget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+        if (selected_tower == static_cast<int>(t)) tower_widget->setStyleSheet("background-color: rgba(23,179,23,30); border-radius: 10px; border: none;");
+        else tower_widget->setStyleSheet("background: transparent; border: none;");
+        
         auto* tower_layout = new QVBoxLayout;
         tower_layout->setAlignment(Qt::AlignBottom);
-
+        //tower_widget->setStyleSheet("border: 1px solid red;");
+        tower_widget->setLayout(tower_layout);
+        towers_layout->addWidget(tower_widget, 1);
         stack<array_sequence, uint> copy(towers[t]);
         array_sequence<uint> disks;
 
@@ -141,33 +147,33 @@ void MainWindow::redraw_towers() {
         for (size_t i = 0; i < disks.size(); ++i) {
             auto disk = disks[i];
             auto* disk_widget = new QFrame;
+            int tower_width = (centralWidget()->width() - 250) / 3;
+            int min_width = tower_width * 0.25;
+            int max_width = tower_width * 0.9;
 
-            disk_widget->setFixedHeight(30);
-            disk_widget->setFixedWidth(40 + disk * 30);
+            int disk_width = (disk_count == 1) ? disk_width = max_width : disk_width = min_width + (disk - 1) * (max_width - min_width) / (disk_count - 1); 
+            int disk_height = std::max(10,static_cast<int>(centralWidget()->height() * 0.028));
+
+            disk_widget->setFixedWidth(disk_width);
+            disk_widget->setFixedHeight(disk_height);
             disk_widget->setStyleSheet(QString("background-color: %1; border-radius: 8px;").arg(colors[disk % colors.size()]));
             tower_layout->addWidget(disk_widget, 0, Qt::AlignHCenter);
         }
 
-        tower_widget->setLayout(tower_layout);
-        auto* click_area = new QPushButton(tower_widget);
-        click_area->setFlat(true);
-        click_area->setStyleSheet("background-color: transparent; border: none;");
-        click_area->setGeometry(tower_widget->rect());
-        towers_layout->addWidget(tower_widget);
-
-        connect(click_area, &QPushButton::clicked, [this, t]() {
+        connect(tower_widget, &QPushButton::clicked, [this, t]() {
                 if (timer->isActive()) return;
                 if (selected_tower == -1) {
                     selected_tower = t;
+                    redraw_towers();
                     return;
                 }
                 if (selected_tower == t) {
                     selected_tower = -1;
+                    redraw_towers();
                     return;
                 }
                 manual_move(selected_tower, t);
                 manual_mode = true;
-                selected_tower = -1;
             }
         );
     }
@@ -198,5 +204,6 @@ void MainWindow::manual_move(size_t from, size_t to) {
     if (!towers[to].empty() && towers[to].top() < disk) return;
     towers[from].pop();
     towers[to].push(disk);
+    selected_tower = -1;
     redraw_towers();
 }
